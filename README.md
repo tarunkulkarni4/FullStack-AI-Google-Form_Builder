@@ -1,19 +1,65 @@
 # NexForm - AI-Powered Google Form Builder
 
-## Application Workflow
+## Application Preview
 
-| Step | Description | Preview |
-|:---:|---|---|
-| 1 | **Landing Page**: A sleek, modern entry point for the NexForm platform. | ![Step 1](screenshots/photo1.png) |
-| 2 | **Secure Authentication**: Seamless integration with Google OAuth 2.0 for secure access. | ![Step 2](screenshots/photo2.png) |
-| 3 | **Dashboard**: Manage all your generated forms and view analytics in one place. | ![Step 3](screenshots/photo3.png) |
-| 4 | **AI Prompting**: Describe your form requirements in natural language. | ![Step 4](screenshots/photo4.png) |
-| 5 | **Schema Planning**: AI analyzes intent and plans the optimal field structure. | ![Step 5](screenshots/photo5.png) |
-| 6 | **Instant Deployment**: Fully functional Google Forms created in seconds. | ![Step 6](screenshots/photo6.png) |
-| 7 | **NexForm Pro**: Access advanced features like contextual form expansion. | ![Step 7](screenshots/photo7.png) |
-| 8 | **Secure Billing**: Trusted payment processing powered by Stripe. | ![Step 8](screenshots/photo8.png) |
-| 9 | **Contextual AI Expansion**: Add new questions to existing forms with deep context. | ![Step 9](screenshots/photo9.png) |
-| 10 | **Billing History**: Comprehensive tracking of all subscription transactions. | ![Step 10](screenshots/photo10.png) |
+<div align="center">
+
+<a name="photo1"></a>
+### Step 1
+![Photo 1](screenshots/photo1.png)
+[**Next ➔**](#photo2)
+
+<a name="photo2"></a>
+### Step 2
+![Photo 2](screenshots/photo2.png)
+[**Next ➔**](#photo3)
+
+<a name="photo3"></a>
+### Step 3
+![Photo 3](screenshots/photo3.png)
+[**Next ➔**](#photo4)
+
+<a name="photo4"></a>
+### Step 4
+![Photo 4](screenshots/photo4.png)
+[**Next ➔**](#photo5)
+
+<a name="photo5"></a>
+### Step 5
+![Photo 5](screenshots/photo5.png)
+[**Next ➔**](#photo6)
+
+<a name="photo6"></a>
+### Step 6
+![Photo 6](screenshots/photo6.png)
+[**Next ➔**](#photo7)
+
+<a name="photo7"></a>
+### Step 7
+![Photo 7](screenshots/photo7.png)
+[**Next ➔**](#photo8)
+
+<a name="photo8"></a>
+### Step 8
+![Photo 8](screenshots/photo8.png)
+[**Next ➔**](#photo9)
+
+<a name="photo9"></a>
+### Step 9
+![Photo 9](screenshots/photo9.png)
+[**Next ➔**](#photo10)
+
+<a name="photo10"></a>
+### Step 10
+![Photo 10](screenshots/photo10.png)
+[**Back to Start ↺**](#photo1)
+
+</div>
+
+<br>
+
+---
+
 
 ## Explanation of Existing System
 Traditionally, creating Google Forms is a manual process. Users must manually type each question, choose the question type (multiple choice, checkbox, etc.), and arrange them. For complex surveys or long forms, this is time-consuming and prone to human error. There's no built-in intelligence to suggest questions or structures based on the form's purpose.
