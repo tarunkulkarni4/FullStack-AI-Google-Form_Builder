@@ -45,6 +45,8 @@ function App() {
                             </PrivateRoute>
                         }
                     />
+
+
                     <Route
                         path="/payment/success"
                         element={
