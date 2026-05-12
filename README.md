@@ -58,6 +58,27 @@ sequenceDiagram
 - 💎 **Premium Tier**: Subscription model for unlimited form generation.
 - 📱 **Responsive Design**: Modern UI built for both desktop and mobile.
 
+## Environment Configuration
+
+To run this project, you will need to set up environment variables. Create a `.env` file in the `server` directory and add the following:
+
+### Server & Database
+- `PORT`: Port for the backend server (e.g., `5000`).
+- `MONGODB_URI`: Your MongoDB connection string.
+- `NODE_ENV`: Set to `development` or `production`.
+
+### Authentication (JWT & Google OAuth)
+- `JWT_SECRET`: A secure random string for token encryption.
+- `GOOGLE_CLIENT_ID`: Google Cloud Console OAuth Client ID.
+- `GOOGLE_CLIENT_SECRET`: Google Cloud Console OAuth Client Secret.
+- `GOOGLE_CALLBACK_URL`: `http://localhost:5000/api/auth/google/callback` (for local development).
+
+### AI Service (Groq)
+- `GROQ_API_KEY`: Your Groq Cloud API Key for AI form generation.
+
+### Frontend
+- `CLIENT_URL`: `http://localhost:5173` (default for Vite).
+
 ## Setup Instructions
 1. Clone the repository.
 2. Install dependencies in both `client` and `server` folders using `npm install`.
