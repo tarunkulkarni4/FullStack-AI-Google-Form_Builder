@@ -3,58 +3,22 @@
 ## Application Preview
 
 <div align="center">
-
-<a name="photo1"></a>
-### Step 1
-![Photo 1](screenshots/photo1.png)
-[**Next ➔**](#photo2)
-
-<a name="photo2"></a>
-### Step 2
-![Photo 2](screenshots/photo2.png)
-[**Next ➔**](#photo3)
-
-<a name="photo3"></a>
-### Step 3
-![Photo 3](screenshots/photo3.png)
-[**Next ➔**](#photo4)
-
-<a name="photo4"></a>
-### Step 4
-![Photo 4](screenshots/photo4.png)
-[**Next ➔**](#photo5)
-
-<a name="photo5"></a>
-### Step 5
-![Photo 5](screenshots/photo5.png)
-[**Next ➔**](#photo6)
-
-<a name="photo6"></a>
-### Step 6
-![Photo 6](screenshots/photo6.png)
-[**Next ➔**](#photo7)
-
-<a name="photo7"></a>
-### Step 7
-![Photo 7](screenshots/photo7.png)
-[**Next ➔**](#photo8)
-
-<a name="photo8"></a>
-### Step 8
-![Photo 8](screenshots/photo8.png)
-[**Next ➔**](#photo9)
-
-<a name="photo9"></a>
-### Step 9
-![Photo 9](screenshots/photo9.png)
-[**Next ➔**](#photo10)
-
-<a name="photo10"></a>
-### Step 10
-![Photo 10](screenshots/photo10.png)
-[**Back to Start ↺**](#photo1)
-
+  <img src="screenshots/photo1.png" width="400" alt="Step 1" />
+  <img src="screenshots/photo2.png" width="400" alt="Step 2" />
+  <img src="screenshots/photo3.png" width="400" alt="Step 3" />
+  <img src="screenshots/photo4.png" width="400" alt="Step 4" />
+  <img src="screenshots/photo5.png" width="400" alt="Step 5" />
+  <img src="screenshots/photo6.png" width="400" alt="Step 6" />
+  <img src="screenshots/photo7.png" width="400" alt="Step 7" />
+  <img src="screenshots/photo8.png" width="400" alt="Step 8" />
+  <img src="screenshots/photo9.png" width="400" alt="Step 9" />
+  <img src="screenshots/photo10.png" width="400" alt="Step 10" />
 </div>
+
+<br>
+
+---
+
 
 <br>
 
