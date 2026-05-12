@@ -259,8 +259,14 @@ const Dashboard = () => {
                                 className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded-lg transition-colors"
                             >
                                 {user?.profilePicture && (
-                                    <img src={user.profilePicture} alt="Profile" className="w-7 h-7 rounded-full border border-slate-200" />
+                                    <img 
+                                        src={user.profilePicture} 
+                                        alt="Profile" 
+                                        className="w-7 h-7 rounded-full border border-slate-200" 
+                                        referrerPolicy="no-referrer"
+                                    />
                                 )}
+
                                 <span className="text-xs font-semibold text-slate-700 hidden md:block">{user?.name}</span>
                                 {subscription?.isActive && (
                                     <span className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
