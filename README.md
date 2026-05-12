@@ -2,18 +2,118 @@
 
 ## Application Preview
 
+<!-- Slide 1 -->
 <div align="center">
-  <img src="screenshots/photo1.png" width="400" alt="Step 1" />
-  <img src="screenshots/photo2.png" width="400" alt="Step 2" />
-  <img src="screenshots/photo3.png" width="400" alt="Step 3" />
-  <img src="screenshots/photo4.png" width="400" alt="Step 4" />
-  <img src="screenshots/photo5.png" width="400" alt="Step 5" />
-  <img src="screenshots/photo6.png" width="400" alt="Step 6" />
-  <img src="screenshots/photo7.png" width="400" alt="Step 7" />
-  <img src="screenshots/photo8.png" width="400" alt="Step 8" />
-  <img src="screenshots/photo9.png" width="400" alt="Step 9" />
-  <img src="screenshots/photo10.png" width="400" alt="Step 10" />
+  <a name="photo1"></a>
+  <br>
+  <a href="#photo10">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 1 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo2">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo1.png" width="100%" />
 </div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 2 -->
+<div align="center">
+  <a name="photo2"></a>
+  <br>
+  <a href="#photo1">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 2 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo3">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo2.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 3 -->
+<div align="center">
+  <a name="photo3"></a>
+  <br>
+  <a href="#photo2">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 3 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo4">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo3.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 4 -->
+<div align="center">
+  <a name="photo4"></a>
+  <br>
+  <a href="#photo3">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 4 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo5">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo4.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 5 -->
+<div align="center">
+  <a name="photo5"></a>
+  <br>
+  <a href="#photo4">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 5 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo6">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo5.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 6 -->
+<div align="center">
+  <a name="photo6"></a>
+  <br>
+  <a href="#photo5">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 6 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo7">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo6.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 7 -->
+<div align="center">
+  <a name="photo7"></a>
+  <br>
+  <a href="#photo6">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 7 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo8">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo7.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 8 -->
+<div align="center">
+  <a name="photo8"></a>
+  <br>
+  <a href="#photo7">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 8 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo9">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo8.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 9 -->
+<div align="center">
+  <a name="photo9"></a>
+  <br>
+  <a href="#photo8">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 9 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo10">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo9.png" width="100%" />
+</div>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<!-- Slide 10 -->
+<div align="center">
+  <a name="photo10"></a>
+  <br>
+  <a href="#photo9">⬅️ Previous</a> &nbsp;&nbsp;&nbsp;&nbsp; <b>Step 10 / 10</b> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#photo1">Next ➡️</a>
+  <br><br>
+  <img src="screenshots/photo10.png" width="100%" />
+</div>
+
+<br>
+
+---
+
 
 <br>
 
