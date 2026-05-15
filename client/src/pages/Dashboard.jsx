@@ -417,8 +417,8 @@ const Dashboard = () => {
                                     </div>
                                 </div>
 
-                                <div className="border-t border-slate-100 pt-4 mt-auto">
-                                    <div className="grid grid-cols-2 gap-2 mb-2">
+                                <div className="border-t border-slate-100 pt-4 mt-auto space-y-2.5">
+                                    <div className="grid grid-cols-2 gap-2">
                                         <a 
                                             href={form.publicUrl} 
                                             target="_blank" 
@@ -437,42 +437,59 @@ const Dashboard = () => {
                                         </button>
                                     </div>
                                     
-                                    <div className="flex items-center gap-2">
+                                    <div className="grid grid-cols-4 gap-1.5">
                                         <a 
                                             href={form.editUrl} 
                                             target="_blank" 
                                             rel="noreferrer" 
-                                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                                            className="flex items-center justify-center py-1.5 rounded-lg border border-slate-200 text-[9px] font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all h-8"
+                                            title="Native Editor"
                                         >
                                             <PenTool className="h-3 w-3" />
-                                            Native
                                         </a>
                                         <button 
                                             onClick={() => handleCopyLink(form.publicUrl)} 
-                                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                                            className="flex items-center justify-center py-1.5 rounded-lg border border-slate-200 text-[9px] font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all h-8"
+                                            title="Copy Link"
                                         >
                                             <Copy className="h-3 w-3" />
-                                            Link
-                                        </button>
-                                        <button 
-                                            onClick={() => handleExpandClick(form)}
-                                            disabled={subChecking}
-                                            className="p-1.5 rounded-lg border border-indigo-100 bg-indigo-50/50 text-indigo-600 hover:bg-indigo-100 transition-all disabled:opacity-40"
-                                            title="Expand with AI"
-                                        >
-                                            {subChecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                                         </button>
                                         <button 
                                             onClick={() => setQrModalData({ url: form.publicUrl, title: form.formTitle })} 
-                                            className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
+                                            className="flex items-center justify-center py-1.5 rounded-lg border border-slate-200 text-[9px] font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all h-8"
+                                            title="QR Code"
                                         >
-                                            <QrCode className="h-3.5 w-3.5" />
+                                            <QrCode className="h-3 w-3" />
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(form._id)} 
-                                            className="p-1.5 rounded-lg border border-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all"
+                                            className="flex items-center justify-center py-1.5 rounded-lg border border-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all h-8"
+                                            title="Delete Form"
                                         >
                                             <Trash2 className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+
+                                    <div className="pt-2.5 border-t border-slate-100/60 overflow-hidden">
+                                        <div className="animate-marquee flex gap-12 mb-2 px-0.5">
+                                            <p className="text-[10px] font-bold text-slate-400 tracking-[0.05em] whitespace-nowrap">
+                                                Want to expand google form?
+                                            </p>
+                                            <p className="text-[10px] font-bold text-slate-400 tracking-[0.05em] whitespace-nowrap">
+                                                Want to expand google form?
+                                            </p>
+                                        </div>
+                                        <button 
+                                            onClick={() => handleExpandClick(form)}
+                                            disabled={subChecking}
+                                            className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-50 border border-indigo-100 text-[10px] font-bold text-indigo-600 hover:bg-indigo-100 transition-all disabled:opacity-40 shadow-sm shadow-indigo-500/5 group"
+                                        >
+                                            {subChecking ? (
+                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                            ) : (
+                                                <Sparkles className="h-3.5 w-3.5 group-hover:animate-pulse" />
+                                            )}
+                                            Expand with AI
                                         </button>
                                     </div>
                                 </div>
