@@ -4,8 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import { 
     Command, LogOut, Plus, FileText, ExternalLink, 
     BarChart2, Loader2, Edit3, Trash2, Calendar, 
-    Clock, Copy, QrCode, X, Sparkles, Crown, CreditCard, Shield, ChevronDown, LayoutTemplate
+    Clock, Copy, QrCode, X, Sparkles, Crown, CreditCard, Shield, ChevronDown, LayoutTemplate,
+    PenTool, Settings, Eye
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import toast from 'react-hot-toast';
+import api from '../services/api';
+import AIWizard from '../components/FormBuilder/AIWizard';
+import ExpandWizard from '../components/FormBuilder/ExpandWizard';
+import EditWizard from '../components/FormBuilder/EditWizard';
+import PricingModal from '../components/PricingModal';
+import Footer from '../components/Layouts/Footer';
 
 const DAILY_TEMPLATES = [
     { title: "Party RSVP", prompt: "Create a fun party RSVP form to collect guest names, dietary restrictions, and song requests." },
@@ -15,13 +24,6 @@ const DAILY_TEMPLATES = [
     { title: "Job Application", prompt: "Create a basic job application form collecting applicant details, experience, education, and references." },
     { title: "Maintenance Request", prompt: "Create a maintenance request form to report issues, describe the problem, and set urgency level." }
 ];
-import { QRCodeSVG } from 'qrcode.react';
-import toast from 'react-hot-toast';
-import api from '../services/api';
-import AIWizard from '../components/FormBuilder/AIWizard';
-import ExpandWizard from '../components/FormBuilder/ExpandWizard';
-import PricingModal from '../components/PricingModal';
-import Footer from '../components/Layouts/Footer';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -32,6 +34,7 @@ const Dashboard = () => {
     const [wizardOpen, setWizardOpen] = useState(false);
     const [qrModalData, setQrModalData] = useState(null);
     const [expandModalData, setExpandModalData] = useState(null);
+    const [editModalData, setEditModalData] = useState(null);
     const [pricingOpen, setPricingOpen] = useState(false);
     const [subscription, setSubscription] = useState(null);
     const [subChecking, setSubChecking] = useState(false);
@@ -414,65 +417,63 @@ const Dashboard = () => {
                                     </div>
                                 </div>
 
-                                <div className="border-t border-slate-100 pt-4 mt-auto flex justify-between items-center">
-                                    <div className="flex gap-1 sm:gap-1.5">
-                                        <div className="relative group">
-                                            <a href={form.publicUrl} target="_blank" rel="noreferrer" className="flex p-2 rounded-lg hover:bg-slate-50 text-slate-500 hover:text-slate-900 transition-colors border border-transparent hover:border-slate-200/60">
-                                                <ExternalLink className="h-4 w-4" />
-                                            </a>
-                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] font-bold px-2.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-10">
-                                                View Live
-                                            </span>
-                                        </div>
-                                        
-                                        <div className="relative group">
-                                            <a href={form.editUrl} target="_blank" rel="noreferrer" className="flex p-2 rounded-lg hover:bg-slate-50 text-slate-500 hover:text-slate-900 transition-colors border border-transparent hover:border-slate-200/60">
-                                                <Edit3 className="h-4 w-4" />
-                                            </a>
-                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] font-bold px-2.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-10">
-                                                Edit Form
-                                            </span>
-                                        </div>
-
-                                        <div className="relative group">
-                                            <button onClick={() => handleCopyLink(form.publicUrl)} className="flex p-2 rounded-lg hover:bg-slate-50 text-slate-500 hover:text-slate-900 transition-colors border border-transparent hover:border-slate-200/60">
-                                                <Copy className="h-4 w-4" />
-                                            </button>
-                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] font-bold px-2.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-10">
-                                                Copy Link
-                                            </span>
-                                        </div>
-
-                                        <div className="relative group">
-                                            <button onClick={() => setQrModalData({ url: form.publicUrl, title: form.formTitle })} className="flex p-2 rounded-lg hover:bg-slate-50 text-slate-500 hover:text-slate-900 transition-colors border border-transparent hover:border-slate-200/60">
-                                                <QrCode className="h-4 w-4" />
-                                            </button>
-                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-800 text-white text-[10px] font-bold px-2.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-10">
-                                                QR Code
-                                            </span>
-                                        </div>
-
-                                        <div className="relative group">
-                                            <button
-                                                onClick={() => handleExpandClick(form)}
-                                                disabled={subChecking}
-                                                className="flex p-2 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors border border-transparent hover:border-indigo-100 disabled:opacity-40"
-                                            >
-                                                {subChecking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                                            </button>
-                                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-10">
-                                                {subscription?.isActive ? 'Expand with AI' : '✦ Expand with AI (Pro)'}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="relative group">
-                                        <button onClick={() => handleDelete(form._id)} className="flex p-2 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors border border-transparent hover:border-rose-100">
-                                            <Trash2 className="h-4 w-4" />
+                                <div className="border-t border-slate-100 pt-4 mt-auto">
+                                    <div className="grid grid-cols-2 gap-2 mb-2">
+                                        <a 
+                                            href={form.publicUrl} 
+                                            target="_blank" 
+                                            rel="noreferrer" 
+                                            className="btn-secondary !py-2 !text-[10px] justify-center gap-1.5 h-9"
+                                        >
+                                            <Eye className="h-3.5 w-3.5" />
+                                            View
+                                        </a>
+                                        <button 
+                                            onClick={() => setEditModalData({ id: form._id, title: form.formTitle })} 
+                                            className="btn-primary !py-2 !text-[10px] justify-center gap-1.5 h-9"
+                                        >
+                                            <Settings className="h-3.5 w-3.5" />
+                                            Edit
                                         </button>
-                                        <span className="absolute -top-8 right-0 whitespace-nowrap bg-rose-600 text-white text-[10px] font-bold px-2.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-10">
-                                            Delete Form
-                                        </span>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-2">
+                                        <a 
+                                            href={form.editUrl} 
+                                            target="_blank" 
+                                            rel="noreferrer" 
+                                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                                        >
+                                            <PenTool className="h-3 w-3" />
+                                            Native
+                                        </a>
+                                        <button 
+                                            onClick={() => handleCopyLink(form.publicUrl)} 
+                                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                                        >
+                                            <Copy className="h-3 w-3" />
+                                            Link
+                                        </button>
+                                        <button 
+                                            onClick={() => handleExpandClick(form)}
+                                            disabled={subChecking}
+                                            className="p-1.5 rounded-lg border border-indigo-100 bg-indigo-50/50 text-indigo-600 hover:bg-indigo-100 transition-all disabled:opacity-40"
+                                            title="Expand with AI"
+                                        >
+                                            {subChecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                                        </button>
+                                        <button 
+                                            onClick={() => setQrModalData({ url: form.publicUrl, title: form.formTitle })} 
+                                            className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
+                                        >
+                                            <QrCode className="h-3.5 w-3.5" />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(form._id)} 
+                                            className="p-1.5 rounded-lg border border-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all"
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -519,6 +520,13 @@ const Dashboard = () => {
                 formId={expandModalData?.id}
                 formTitle={expandModalData?.title}
                 onSuccess={() => fetchForms()}
+            />
+
+            <EditWizard
+                isOpen={!!editModalData}
+                onClose={() => setEditModalData(null)}
+                formId={editModalData?.id}
+                formTitle={editModalData?.title}
             />
 
             <PricingModal

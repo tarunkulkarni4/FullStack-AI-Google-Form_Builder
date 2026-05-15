@@ -1,9 +1,10 @@
-const groqAIService = require('../services/groqAIService');
+const aiServiceRouter = require('../services/aiServiceRouter');
 const googleFormsService = require('../services/googleFormsService');
 
 /**
  * AI Controller
  * Handles AI-powered form generation endpoints.
+ * Supports model selection via the `aiModel` field in request body.
  */
 
 /**
@@ -11,14 +12,18 @@ const googleFormsService = require('../services/googleFormsService');
  * Step 1: Analyzes user's prompt and suggests form sections.
  */
 const analyzeIntent = async (req, res) => {
-    const { prompt, language } = req.body;
+    const { prompt, language, aiModel } = req.body;
 
     if (!prompt) {
         return res.status(400).json({ message: 'Prompt is required' });
     }
 
     try {
-        const suggestions = await groqAIService.analyzeIntent(prompt, language || 'English');
+        const suggestions = await aiServiceRouter.analyzeIntent(
+            prompt,
+            language || 'English',
+            aiModel || 'grok'
+        );
         res.json(suggestions);
     } catch (error) {
         console.error('AI Intent Analysis Error:', error.message);
@@ -35,17 +40,18 @@ const analyzeIntent = async (req, res) => {
  * Returns Google Forms API batch requests ready for creation.
  */
 const generateFormStructure = async (req, res) => {
-    const { prompt, sections, language } = req.body;
+    const { prompt, sections, language, aiModel } = req.body;
 
     if (!prompt || !sections) {
         return res.status(400).json({ message: 'Prompt and sections are required' });
     }
 
     try {
-        const { questions, themeColor, timeEstimate } = await groqAIService.generateFormStructure(
+        const { questions, themeColor, timeEstimate } = await aiServiceRouter.generateFormStructure(
             prompt,
             sections,
-            language || 'English'
+            language || 'English',
+            aiModel || 'grok'
         );
 
         // Build Google Forms API requests

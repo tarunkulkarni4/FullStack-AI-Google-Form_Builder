@@ -14,6 +14,22 @@ const FEATURES = [
     'Priority AI processing',
 ];
 
+const MONTHLY_MODELS = [
+    { id: 'grok',     name: 'Grok',     icon: '⚡', color: '#FF6B35', free: true },
+    { id: 'gemini',   name: 'Gemini',   icon: '✦', color: '#4285F4', free: true },
+    { id: 'mistral',  name: 'Mistral',  icon: '▲', color: '#7C3AED', free: true },
+    { id: 'deepseek', name: 'DeepSeek', icon: '◈', color: '#0EA5E9', free: true },
+];
+
+const YEARLY_MODELS = [
+    { id: 'grok',    name: 'Grok',    icon: '⚡', color: '#FF6B35' },
+    { id: 'gemini',  name: 'Gemini',  icon: '✦', color: '#4285F4' },
+    { id: 'mistral', name: 'Mistral', icon: '▲', color: '#7C3AED' },
+    { id: 'deepseek',name: 'DeepSeek',icon: '◈', color: '#0EA5E9' },
+    { id: 'claude',  name: 'Claude',  icon: '◆', color: '#D97706' },
+    { id: 'gpt4o',   name: 'GPT-4o',  icon: '◎', color: '#10A37F' },
+];
+
 /* Bar Spinner */
 const BarSpinner = () => (
     <span className="inline-flex items-end gap-[2px]" style={{ height: 14 }}>
@@ -114,6 +130,18 @@ const PricingModal = ({ isOpen, onClose }) => {
                             <p className="text-[11px] text-slate-400 font-medium">Billed monthly. Cancel anytime.</p>
                         </div>
 
+                        {/* AI Models */}
+                        <div className="mb-5">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">AI Models Included</p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {MONTHLY_MODELS.map(m => (
+                                    <span key={m.id} className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-700">
+                                        <span style={{ color: m.color }}>{m.icon}</span>{m.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
                         <ul className="space-y-2.5 mb-6 flex-1">
                             {FEATURES.map((f, i) => (
                                 <li key={i} className="flex items-start gap-2">
@@ -165,6 +193,19 @@ const PricingModal = ({ isOpen, onClose }) => {
                                     <span className="text-slate-200 font-bold">₹150/mo </span>
                                     <span className="text-slate-400">— best value</span>
                                 </p>
+                            </div>
+
+                            {/* AI Models */}
+                            <div className="mb-5">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">AI Models Included</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {YEARLY_MODELS.map(m => (
+                                        <span key={m.id} className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-white/10 bg-white/10 text-[11px] font-semibold text-slate-200">
+                                            <span style={{ color: m.color }}>{m.icon}</span>{m.name}
+                                        </span>
+                                    ))}
+                                </div>
+                                <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Includes Claude &amp; GPT-4o — exclusive to yearly.</p>
                             </div>
 
                             <ul className="space-y-2.5 mb-6 flex-1">

@@ -27,5 +27,7 @@ router.post('/:id/expand/generate', authenticate, aiLimiter, formController.gene
 router.post('/:id/expand/apply', authenticate, apiLimiter, formController.applyExpandQuestions);
 router.post('/:id/close', authenticate, apiLimiter, formController.closeForm);
 router.post('/:id/reactivate', authenticate, apiLimiter, formController.reactivateForm);
+router.get('/:id/structure', authenticate, apiLimiter, formController.getFormStructure);
+router.put('/:id/structure', authenticate, apiLimiter, formController.updateFormStructure);
 
 module.exports = router;

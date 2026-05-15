@@ -240,6 +240,32 @@ const duplicateForm = async (user, originalGoogleFormId, newTitle) => {
     };
 };
 
+/**
+ * Executes a batch update on a Google Form.
+ */
+const batchUpdateForm = async (user, googleFormId, requests) => {
+    const auth = createOAuth2Client();
+    auth.setCredentials({
+        access_token: user.accessToken,
+        refresh_token: user.refreshToken,
+    });
+
+    auth.on('tokens', async (tokens) => {
+        if (tokens.access_token) {
+            user.accessToken = tokens.access_token;
+            if (tokens.refresh_token) user.refreshToken = tokens.refresh_token;
+            await user.save();
+        }
+    });
+
+    const formsApi = google.forms({ version: 'v1', auth });
+
+    await formsApi.forms.batchUpdate({
+        formId: googleFormId,
+        requestBody: { requests },
+    });
+};
+
 module.exports = {
     createForm,
     appendQuestions,
@@ -247,4 +273,5 @@ module.exports = {
     duplicateForm,
     buildBatchRequests,
     buildQuestion,
+    batchUpdateForm,
 };

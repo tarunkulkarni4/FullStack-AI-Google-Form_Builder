@@ -1,8 +1,9 @@
 const Form = require('../models/Form');
 const User = require('../models/User');
+const { createAuthUrl } = require('../config/oauth');
 const googleFormsService = require('../services/googleFormsService');
 const googleSheetsService = require('../services/googleSheetsService');
-const groqAIService = require('../services/groqAIService');
+const aiServiceRouter = require('../services/aiServiceRouter');
 
 /**
  * Form Controller
@@ -260,7 +261,8 @@ const getExpandSuggestions = async (req, res) => {
         const form = await Form.findOne({ _id: req.params.id, userId: req.userId });
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
-        const suggestions = await groqAIService.generateExpandSuggestions(form.formTitle);
+        const modelId = req.query.aiModel || 'grok';
+        const suggestions = await aiServiceRouter.generateExpandSuggestions(form.formTitle, modelId);
         res.json({ suggestions });
     } catch (error) {
         console.error('Expand Suggestions Error:', error);
@@ -273,7 +275,7 @@ const getExpandSuggestions = async (req, res) => {
  * Generates new questions via AI for preview. Does NOT save to Google Forms yet.
  */
 const generateExpandPreview = async (req, res) => {
-    const { prompt, language } = req.body;
+    const { prompt, language, aiModel } = req.body;
 
     if (!prompt) {
         return res.status(400).json({ message: 'Prompt is required' });
@@ -284,10 +286,11 @@ const generateExpandPreview = async (req, res) => {
         if (!form) return res.status(404).json({ message: 'Form not found' });
 
         // Generate new questions via AI
-        const questions = await groqAIService.generateExpandQuestions(
+        const questions = await aiServiceRouter.generateExpandQuestions(
             form.formTitle,
             prompt,
-            language || 'English'
+            language || 'English',
+            aiModel || 'grok'
         );
 
         res.json({
@@ -390,6 +393,78 @@ const reactivateForm = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/forms/:id/structure
+ * Fetches the form structure from Google Forms API.
+ */
+const getFormStructure = async (req, res) => {
+    try {
+        const form = await Form.findOne({ _id: req.params.id, userId: req.userId });
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+
+        const user = await User.findById(req.userId);
+        if (!user || !user.accessToken) {
+            return res.status(401).json({ message: 'Authorization required' });
+        }
+
+        const { form: formData } = await googleFormsService.getFormResponses(user, form.googleFormId);
+        res.json({ 
+            title: formData.info?.title || form.formTitle, 
+            description: formData.info?.description || form.formDescription,
+            items: formData.items || [] 
+        });
+    } catch (error) {
+        console.error('Get Form Structure Error:', error.message);
+        res.status(500).json({ message: 'Failed to fetch structure', error: error.message });
+    }
+};
+
+/**
+ * PUT /api/forms/:id/structure
+ * Updates the form structure via Google Forms API batchUpdate.
+ */
+const updateFormStructure = async (req, res) => {
+    try {
+        const { requests } = req.body;
+        if (!requests || !Array.isArray(requests)) {
+            return res.status(400).json({ message: 'Valid requests array is required' });
+        }
+
+        const form = await Form.findOne({ _id: req.params.id, userId: req.userId });
+        if (!form) return res.status(404).json({ message: 'Form not found' });
+
+        const user = await User.findById(req.userId);
+        if (!user || !user.accessToken) {
+            return res.status(401).json({ message: 'Authorization required' });
+        }
+
+        if (requests.length > 0) {
+            await googleFormsService.batchUpdateForm(user, form.googleFormId, requests);
+            
+            // Just update a default time estimate or leave as is to avoid secondary API failures
+            // We can re-sync the actual count during the next dashboard load or response sync
+            form.lastSyncedAt = new Date();
+            await form.save();
+        }
+
+        res.json({ message: 'Form structure updated successfully', timeEstimate: form.timeEstimate });
+    } catch (error) {
+        console.error('Update Form Structure Error:', error.response?.data || error.message);
+        if (error.message?.includes('invalid_grant') || error.code === 401) {
+            return res.status(401).json({
+                message: 'Google session expired. Please log in again.',
+                error: 'AUTH_EXPIRED',
+            });
+        }
+        const googleError = error.response?.data?.error || error.message;
+        res.status(500).json({ 
+            message: 'Failed to update structure', 
+            error: googleError.message || googleError,
+            details: googleError
+        });
+    }
+};
+
 module.exports = {
     createForm,
     getUserForms,
@@ -403,4 +478,6 @@ module.exports = {
     applyExpandQuestions,
     closeForm,
     reactivateForm,
+    getFormStructure,
+    updateFormStructure,
 };

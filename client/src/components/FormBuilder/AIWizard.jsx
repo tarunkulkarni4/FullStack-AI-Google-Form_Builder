@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, AlertCircle, RefreshCw, Wand2 } from 'lucide-react';
+import { X, Sparkles, AlertCircle, RefreshCw, Wand2, ChevronDown, Check, Lock } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -16,9 +17,22 @@ const LANGUAGES = [
     "Russian", "Italian", "Korean", "Dutch"
 ];
 
+const AI_MODELS = [
+    { id: 'grok',    name: 'Grok 1.5',         provider: 'xAI' },
+    { id: 'gemini',  name: 'Gemini 1.5 Pro',   provider: 'Google' },
+    { id: 'deepseek',name: 'DeepSeek Coder',   provider: 'DeepSeek' },
+    { id: 'mistral', name: 'Mistral Large',    provider: 'Mistral', locked: true },
+    { id: 'claude',  name: 'Claude 3.5 Sonnet',provider: 'Anthropic', locked: true },
+    { id: 'gpt4o',   name: 'GPT-4o',           provider: 'OpenAI', locked: true },
+];
+
 const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = false }) => {
+    const { user } = useAuth();
+    const isPremium = user?.subscription?.plan === 'monthly' || user?.subscription?.plan === 'yearly' || user?.subscription?.status === 'active';
+
     const [step, setStep] = useState(1);
     const [prompt, setPrompt] = useState('');
+    const [loadingStatus, setLoadingStatus] = useState('');
 
     useEffect(() => {
         if (isOpen) {
@@ -30,7 +44,7 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
                     setLoading(true);
                     try {
                         // Use English as default for templates
-                        const { data } = await api.post('/forms/generate-ai', { prompt: initialPrompt, language: 'English' });
+                        const { data } = await api.post('/forms/generate-ai', { prompt: initialPrompt, language: 'English', aiModel: selectedModel });
                         setSections(data);
                         setSelectedSections(data.map(s => s.id));
                         setStep(2);
@@ -45,6 +59,8 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
         }
     }, [isOpen, initialPrompt, autoStart]);
     const [language, setLanguage] = useState('English');
+    const [selectedModel, setSelectedModel] = useState('grok');
+    const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
     const [themeColor, setThemeColor] = useState('#673ab7'); // Google Forms Purple
     const [loading, setLoading] = useState(false);
     
@@ -72,15 +88,25 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
         }
 
         setLoading(true);
+        const m = AI_MODELS.find(x => x.id === selectedModel);
+        const modelName = m ? m.name.split(' ')[0] : 'AI';
+        
+        setLoadingStatus(`${modelName} loading...`);
+        const timer = setTimeout(() => {
+            setLoadingStatus(`${modelName} analyzing...`);
+        }, 1000);
+
         try {
-            const { data } = await api.post('/forms/generate-ai', { prompt, language });
+            const { data } = await api.post('/forms/generate-ai', { prompt, language, aiModel: selectedModel });
             setSections(data);
             setSelectedSections(data.map(s => s.id)); // Auto-select all by default
             setStep(2);
         } catch (error) {
             toast.error('Failed to analyze prompt. Try again.');
         } finally {
+            clearTimeout(timer);
             setLoading(false);
+            setLoadingStatus('');
         }
     };
 
@@ -91,12 +117,21 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
         }
 
         setLoading(true);
+        const m = AI_MODELS.find(x => x.id === selectedModel);
+        const modelName = m ? m.name.split(' ')[0] : 'AI';
+        
+        setLoadingStatus(`${modelName} loading...`);
+        const timer = setTimeout(() => {
+            setLoadingStatus(`${modelName} generating...`);
+        }, 1000);
+
         try {
             const chosenSections = sections.filter(s => selectedSections.includes(s.id));
             const { data } = await api.post('/forms/generate-structure', { 
                 prompt, 
                 sections: chosenSections,
-                language 
+                language,
+                aiModel: selectedModel
             });
             
             setGeneratedQuestions(data.questions);
@@ -108,7 +143,9 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
             const msg = error.response?.data?.message || error.message || 'Failed to generate questions. Try again.';
             toast.error(msg);
         } finally {
+            clearTimeout(timer);
             setLoading(false);
+            setLoadingStatus('');
         }
     };
 
@@ -170,6 +207,12 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
                         </div>
                         <div>
                             <h2 className="text-sm font-bold text-slate-800 leading-tight">Architecture Setup</h2>
+                            {(() => { const m = AI_MODELS.find(x => x.id === selectedModel); return m ? (
+                                <p className="text-[10px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5">
+                                    <Wand2 className="w-3 h-3" />
+                                    {m.name} · {m.provider}
+                                </p>
+                            ) : null; })()}
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -209,9 +252,60 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
                                         value={prompt}
                                         onChange={(e) => setPrompt(e.target.value)}
                                         placeholder="E.g., I need a customer feedback form for my new coffee shop. Ask about coffee quality, ambiance, and how they found out about us."
-                                        className="relative input-field h-32 resize-none text-sm leading-relaxed border-slate-200/80 shadow-sm focus:border-blue-500 bg-white"
+                                        className="relative input-field h-36 resize-none text-sm leading-relaxed border-slate-200/80 shadow-sm focus:border-blue-500 bg-white pb-10"
                                         autoFocus
                                     />
+                                    
+                                    {/* Model selector inside textarea */}
+                                    <div className="absolute bottom-2 right-2 z-20 flex justify-end">
+                                        {(() => {
+                                            const m = AI_MODELS.find(x => x.id === selectedModel);
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setModelDropdownOpen(o => !o)}
+                                                    className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-100 text-xs font-medium text-slate-600 transition-colors"
+                                                >
+                                                    <Wand2 className="w-3.5 h-3.5" />
+                                                    <span>{m?.name}</span>
+                                                    <ChevronDown className={`w-3 h-3 text-slate-400 ml-0.5 opacity-70 transition-transform duration-150 ${modelDropdownOpen ? 'rotate-180' : ''}`} />
+                                                </button>
+                                            );
+                                        })()}
+
+                                        {modelDropdownOpen && (
+                                            <>
+                                                <div className="fixed inset-0 z-50" onClick={() => setModelDropdownOpen(false)}></div>
+                                                <div className="absolute bottom-full right-0 mb-1 z-[60] w-56 bg-white border border-slate-200 rounded-md shadow-lg overflow-hidden py-1 animate-fade-in origin-bottom-right">
+                                                    {AI_MODELS.map((m) => (
+                                                        <button
+                                                            key={m.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const isLocked = m.locked && !isPremium;
+                                                                if (isLocked) {
+                                                                    toast('Upgrade to Premium to unlock ' + m.name, { icon: '🔒' });
+                                                                    return;
+                                                                }
+                                                                setSelectedModel(m.id);
+                                                                setModelDropdownOpen(false);
+                                                            }}
+                                                            className={`w-full flex items-center justify-between px-3 py-1.5 text-left text-xs transition-colors ${
+                                                                (m.locked && !isPremium) ? 'text-slate-400 hover:bg-slate-50' :
+                                                                selectedModel === m.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-100 text-slate-700'
+                                                            }`}
+                                                        >
+                                                            <span className="flex items-center gap-2">
+                                                                {m.name}
+                                                                {(m.locked && !isPremium) && <Lock className="w-3 h-3 opacity-60" />}
+                                                            </span>
+                                                            {selectedModel === m.id && <Check className="w-3.5 h-3.5 shrink-0" />}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                                 
                                 {/* Suggestions */}
@@ -512,7 +606,7 @@ const AIWizard = ({ isOpen, onClose, onSuccess, initialPrompt = '', autoStart = 
                             {loading ? (
                                 <>
                                     <RefreshCw className="w-4 h-4 animate-spin" />
-                                    {step === 1 ? 'Analyzing...' : step === 2 ? 'Generating...' : 'Creating Google Form...'}
+                                    {loadingStatus || (step === 1 ? 'Analyzing...' : step === 2 ? 'Generating...' : 'Creating Google Form...')}
                                 </>
                             ) : (
                                 <>

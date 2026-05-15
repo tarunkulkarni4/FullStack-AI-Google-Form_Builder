@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, CheckCircle, X, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, CheckCircle, X, ChevronRight, ChevronDown, Check, Lock, Wand2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const LANGUAGES = ['English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch', 'Russian', 'Chinese', 'Japanese', 'Korean', 'Hindi', 'Arabic'];
+
+const AI_MODELS = [
+    { id: 'grok',    name: 'Grok 1.5',         provider: 'xAI' },
+    { id: 'gemini',  name: 'Gemini 1.5 Pro',   provider: 'Google' },
+    { id: 'deepseek',name: 'DeepSeek Coder',   provider: 'DeepSeek' },
+    { id: 'mistral', name: 'Mistral Large',    provider: 'Mistral', locked: true },
+    { id: 'claude',  name: 'Claude 3.5 Sonnet',provider: 'Anthropic', locked: true },
+    { id: 'gpt4o',   name: 'GPT-4o',           provider: 'OpenAI', locked: true },
+];
 
 /* Bar spinner — 5 vertical bars fading in sequence */
 const BarSpinner = ({ className = 'w-4 h-4' }) => (
@@ -32,10 +42,18 @@ const BarSpinner = ({ className = 'w-4 h-4' }) => (
 );
 
 const ExpandWizard = ({ isOpen, onClose, formId, formTitle, onSuccess }) => {
+    const { user } = useAuth();
+    const isPremium = user?.subscription?.plan === 'monthly' || user?.subscription?.plan === 'yearly' || user?.subscription?.status === 'active';
+
     const [prompt, setPrompt] = useState('');
     const [language, setLanguage] = useState('English');
+    const [selectedModel, setSelectedModel] = useState('grok');
+    const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+    const modelDropdownRef = useRef(null);
+
     const [generating, setGenerating] = useState(false);
     const [applying, setApplying] = useState(false);
+    const [loadingStatus, setLoadingStatus] = useState('');
     const [previewQuestions, setPreviewQuestions] = useState([]);
     const [selectedIndexes, setSelectedIndexes] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
@@ -51,24 +69,42 @@ const ExpandWizard = ({ isOpen, onClose, formId, formTitle, onSuccess }) => {
     const selectAll = () => setSelectedIndexes(previewQuestions.map((_, i) => i));
     const deselectAll = () => setSelectedIndexes([]);
 
-    // Fetch AI suggestions when wizard opens
+    // Fetch AI suggestions when wizard opens or model changes
     useEffect(() => {
         if (!isOpen || !formId) return;
         setSuggestions([]);
         setLoadingSuggestions(true);
-        api.get(`/forms/${formId}/expand/suggestions`)
+        api.get(`/forms/${formId}/expand/suggestions?aiModel=${selectedModel}`)
             .then(({ data }) => setSuggestions(data.suggestions || []))
             .catch(() => setSuggestions([]))
             .finally(() => setLoadingSuggestions(false));
-    }, [isOpen, formId]);
+    }, [isOpen, formId, selectedModel]);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (modelDropdownRef.current && !modelDropdownRef.current.contains(e.target)) {
+                setModelDropdownOpen(false);
+            }
+        };
+        if (modelDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [modelDropdownOpen]);
 
     if (!isOpen) return null;
 
     const handleGenerate = async () => {
         if (!prompt.trim()) return toast.error('Please describe what to add');
         setGenerating(true);
+        const m = AI_MODELS.find(x => x.id === selectedModel);
+        const modelName = m ? m.name.split(' ')[0] : 'AI';
+        
+        setLoadingStatus(`${modelName} loading...`);
+        const timer = setTimeout(() => {
+            setLoadingStatus(`${modelName} analyzing...`);
+        }, 1000);
+
         try {
-            const { data } = await api.post(`/forms/${formId}/expand/generate`, { prompt, language });
+            const { data } = await api.post(`/forms/${formId}/expand/generate`, { prompt, language, aiModel: selectedModel });
             const qs = data.questions.map(q => ({ ...q, required: true }));
             setPreviewQuestions(qs);
             setSelectedIndexes(qs.map((_, i) => i)); // select all by default
@@ -76,7 +112,9 @@ const ExpandWizard = ({ isOpen, onClose, formId, formTitle, onSuccess }) => {
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to generate questions');
         } finally {
+            clearTimeout(timer);
             setGenerating(false);
+            setLoadingStatus('');
         }
     };
 
@@ -142,13 +180,63 @@ const ExpandWizard = ({ isOpen, onClose, formId, formTitle, onSuccess }) => {
                             {/* Prompt */}
                             <div>
                                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Describe What to Add</label>
-                                <textarea
-                                    value={prompt}
-                                    onChange={e => setPrompt(e.target.value)}
-                                    placeholder="e.g. Add feedback questions about catering quality..."
-                                    rows={5}
-                                    className="w-full px-4 py-3 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none placeholder:text-slate-400 transition-all"
-                                />
+                                <div className="relative group">
+                                    <textarea
+                                        value={prompt}
+                                        onChange={e => setPrompt(e.target.value)}
+                                        placeholder="e.g. Add feedback questions about catering quality..."
+                                        rows={5}
+                                        className="w-full px-4 py-3 pb-10 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none placeholder:text-slate-400 transition-all"
+                                    />
+                                    {/* Model selector — pinned bottom-right inside textarea, exactly like VS Code */}
+                                    <div className="absolute bottom-2 right-2 z-20 flex justify-end" ref={modelDropdownRef}>
+                                        {(() => {
+                                            const m = AI_MODELS.find(x => x.id === selectedModel);
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setModelDropdownOpen(o => !o)}
+                                                    className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-100 text-xs font-medium text-slate-600 transition-colors bg-white/90 backdrop-blur-sm shadow-sm border border-slate-200"
+                                                >
+                                                    <Wand2 className="w-3.5 h-3.5" />
+                                                    <span>{m?.name}</span>
+                                                    <ChevronDown className={`w-3 h-3 text-slate-400 ml-0.5 opacity-70 transition-transform duration-150 ${modelDropdownOpen ? 'rotate-180' : ''}`} />
+                                                </button>
+                                            );
+                                        })()}
+
+                                        {/* Dropdown panel — opens downward to avoid clipping */}
+                                        {modelDropdownOpen && (
+                                            <div className="absolute top-full right-0 mt-1 z-[60] w-56 bg-white border border-slate-200 rounded-md shadow-lg overflow-hidden py-1 animate-slide-up origin-top-right">
+                                                {AI_MODELS.map((m) => (
+                                                    <button
+                                                        key={m.id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const isLocked = m.locked && !isPremium;
+                                                            if (isLocked) {
+                                                                toast('Upgrade to Premium to unlock ' + m.name, { icon: '🔒' });
+                                                                return;
+                                                            }
+                                                            setSelectedModel(m.id);
+                                                            setModelDropdownOpen(false);
+                                                        }}
+                                                        className={`w-full flex items-center justify-between px-3 py-1.5 text-left text-xs transition-colors ${
+                                                            (m.locked && !isPremium) ? 'text-slate-400 hover:bg-slate-50' :
+                                                            selectedModel === m.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-100 text-slate-700'
+                                                        }`}
+                                                    >
+                                                        <span className="flex items-center gap-2">
+                                                            {m.name}
+                                                            {(m.locked && !isPremium) && <Lock className="w-3 h-3 opacity-60" />}
+                                                        </span>
+                                                        {selectedModel === m.id && <Check className="w-3.5 h-3.5 shrink-0" />}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Suggestions */}
@@ -197,7 +285,7 @@ const ExpandWizard = ({ isOpen, onClose, formId, formTitle, onSuccess }) => {
                                 className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-2.5 rounded-lg text-[11px] font-medium uppercase tracking-[0.12em] hover:bg-slate-700 transition-all shadow-sm hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 {generating ? <BarSpinner className="w-5 h-4" /> : <Sparkles className="w-4 h-4" />}
-                                {generating ? 'Generating...' : 'Generate Preview'}
+                                {generating ? (loadingStatus || 'Generating...') : 'Generate Preview'}
                             </button>
                         </div>
                     </div>
