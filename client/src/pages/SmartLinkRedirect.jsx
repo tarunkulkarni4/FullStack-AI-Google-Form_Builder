@@ -14,9 +14,9 @@ const SmartLinkRedirect = () => {
                 // Note: Direct axios call since this is a public endpoint (no auth required)
                 const response = await axios.get(`http://localhost:5000/f/${formId}`);
                 const result = response.data;
-                
+
                 setData(result);
-                
+
                 if (result.status === 'ACTIVE') {
                     // Valid form, redirect to Google Forms
                     window.location.href = result.publicUrl;
@@ -66,24 +66,24 @@ const SmartLinkRedirect = () => {
                 ) : (
                     <AlertCircle className="h-16 w-16 text-[var(--danger)] mx-auto mb-6" />
                 )}
-                
+
                 <h1 className="text-2xl font-black mb-3">
-                    {status === 'expired' ? 'Form Expired' : 
-                     status === 'limit_reached' ? 'Limit Reached' : 
-                     'Form Not Found'}
+                    {status === 'expired' ? 'Form Expired' :
+                        status === 'limit_reached' ? 'Limit Reached' :
+                            'Form Not Found'}
                 </h1>
-                
+
                 <p className="text-[var(--text-secondary)] mb-6 text-lg">
                     {data?.message || 'The form you are looking for does not exist or is unavailable.'}
                 </p>
-                
+
                 {data?.title && (
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-100 mb-6">
                         <span className="text-sm text-[var(--text-muted)] block mb-1">Form Name</span>
                         <span className="font-semibold text-gray-800">{data.title}</span>
                     </div>
                 )}
-                
+
                 <div className="text-xs text-[var(--text-muted)] font-medium tracking-wide uppercase mt-8 pt-4 border-t border-[var(--border-light)]">
                     Powered by AI Form Builder
                 </div>
